@@ -52,16 +52,28 @@ export default defineConfig({
     target: 'es2020',
     sourcemap: false,
     cssCodeSplit: true,
+    modulePreload: { polyfill: false },
     rollupOptions: {
       output: {
         manualChunks(id: string) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react-router') || id.includes('/react-dom/') || id.includes('/react/')) return 'react'
-            if (id.includes('@supabase')) return 'supabase'
-            if (id.includes('recharts') || id.includes('d3-')) return 'charts'
-            return 'vendor'
-          }
-          return undefined
+          if (!id.includes('node_modules')) return undefined
+          if (
+            id.includes('/xlsx/') ||
+            id.includes('recharts') ||
+            id.includes('/d3-') ||
+            id.includes('victory-vendor')
+          )
+            return undefined
+          if (
+            id.includes('react-router') ||
+            id.includes('/react-dom/') ||
+            id.includes('/react/') ||
+            id.includes('/scheduler/') ||
+            id.includes('/react-is/')
+          )
+            return 'react'
+          if (id.includes('@supabase')) return 'supabase'
+          return 'vendor'
         },
       },
     },

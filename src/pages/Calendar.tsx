@@ -7,6 +7,7 @@ import {
   formatMoney,
   isoDate,
   monthNameUA,
+  parseLocalDate,
   UA_WEEKDAYS_SHORT,
   weekdayLongUA,
 } from '../lib/utils'
@@ -68,11 +69,10 @@ export function CalendarPage() {
   const grid = useMemo(() => buildGrid(current), [current])
 
   const totals = useMemo(() => {
-    const inMonth = shifts.filter(
-      (s) =>
-        new Date(s.date).getMonth() === current.getMonth() &&
-        new Date(s.date).getFullYear() === current.getFullYear(),
-    )
+    const inMonth = shifts.filter((s) => {
+      const d = parseLocalDate(s.date)
+      return d.getMonth() === current.getMonth() && d.getFullYear() === current.getFullYear()
+    })
     const hours = inMonth.reduce((a, s) => a + Number(s.hours), 0)
     const wage = inMonth.reduce((a, s) => a + Number(s.wage), 0)
     const workedDays = inMonth.filter((s) => Number(s.hours) > 0).length

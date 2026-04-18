@@ -8,6 +8,7 @@ import {
   formatMoney,
   isoDate,
   monthNameUA,
+  parseLocalDate,
   weekdayLongUA,
 } from '../lib/utils'
 import { StatCard } from '../components/StatCard'
@@ -133,9 +134,9 @@ export function DashboardPage() {
             <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-[var(--shadow-soft)]">
               <div className="text-center leading-none">
                 <div className="text-[10px] uppercase opacity-80">
-                  {monthNameUA(new Date(upcoming.date).getMonth()).slice(0, 3)}
+                  {monthNameUA(parseLocalDate(upcoming.date).getMonth()).slice(0, 3)}
                 </div>
-                <div className="text-xl font-bold">{new Date(upcoming.date).getDate()}</div>
+                <div className="text-xl font-bold">{parseLocalDate(upcoming.date).getDate()}</div>
               </div>
             </div>
             <div className="min-w-0 flex-1">
@@ -178,7 +179,7 @@ export function DashboardPage() {
             .map((s) => (
               <li key={s.id} className="flex items-center gap-3 py-3">
                 <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-100 text-sm font-bold text-slate-700 dark:bg-white/5 dark:text-slate-200">
-                  {new Date(s.date).getDate()}
+                  {parseLocalDate(s.date).getDate()}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium">

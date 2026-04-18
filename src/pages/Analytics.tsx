@@ -13,7 +13,7 @@ import {
 } from 'recharts'
 import { useShifts } from '../hooks/useShifts'
 import { useProfile } from '../hooks/useProfile'
-import { formatMoney, monthNameUA, UA_WEEKDAYS_SHORT } from '../lib/utils'
+import { formatMoney, monthNameUA, parseLocalDate, UA_WEEKDAYS_SHORT } from '../lib/utils'
 
 export function AnalyticsPage() {
   const { profile } = useProfile()
@@ -23,7 +23,7 @@ export function AnalyticsPage() {
   const byMonth = useMemo(() => {
     const map = new Map<string, { month: string; key: string; hours: number; wage: number; count: number }>()
     shifts.forEach((s) => {
-      const d = new Date(s.date)
+      const d = parseLocalDate(s.date)
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
       const label = `${monthNameUA(d.getMonth()).slice(0, 3)} ${String(d.getFullYear()).slice(2)}`
       const current =
@@ -41,7 +41,7 @@ export function AnalyticsPage() {
     const hours = [0, 0, 0, 0, 0, 0, 0]
     shifts.forEach((s) => {
       if (Number(s.hours) <= 0) return
-      const idx = (new Date(s.date).getDay() + 6) % 7
+      const idx = (parseLocalDate(s.date).getDay() + 6) % 7
       counts[idx] += 1
       hours[idx] += Number(s.hours)
     })

@@ -1,4 +1,4 @@
-import { format, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 import { uk } from 'date-fns/locale'
 
 export const UA_WEEKDAYS_SHORT = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'] as const
@@ -26,13 +26,27 @@ export const UA_MONTHS = [
   'Грудень',
 ] as const
 
+/**
+ * Parse an ISO date string as a LOCAL date (midnight) rather than UTC.
+ * `new Date("2026-04-18")` is interpreted as UTC which shifts the day
+ * in negative timezones. We want day-granular values to stay stable.
+ */
+export function parseLocalDate(date: string | Date): Date {
+  if (date instanceof Date) return date
+  const m = date.match(/^(\d{4})-(\d{2})-(\d{2})/)
+  if (m) {
+    return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
+  }
+  return new Date(date)
+}
+
 export function weekdayShortUA(date: Date | string): string {
-  const d = typeof date === 'string' ? new Date(date) : date
+  const d = parseLocalDate(date)
   return UA_WEEKDAYS_SHORT[d.getDay()]
 }
 
 export function weekdayLongUA(date: Date | string): string {
-  const d = typeof date === 'string' ? new Date(date) : date
+  const d = parseLocalDate(date)
   return UA_WEEKDAYS_LONG[d.getDay()]
 }
 
@@ -78,12 +92,12 @@ export function formatMoney(amount: number, currency = 'PLN'): string {
 }
 
 export function formatDateUA(date: string | Date, fmt = 'd MMM yyyy'): string {
-  const d = typeof date === 'string' ? parseISO(date) : date
+  const d = typeof date === 'string' ? parseLocalDate(date) : date
   return format(d, fmt, { locale: uk })
 }
 
 export function formatDateFull(date: string | Date): string {
-  const d = typeof date === 'string' ? parseISO(date) : date
+  const d = typeof date === 'string' ? parseLocalDate(date) : date
   return format(d, 'd MMMM yyyy', { locale: uk })
 }
 

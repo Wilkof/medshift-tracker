@@ -3,7 +3,7 @@ import { Pencil, Plus, Search } from 'lucide-react'
 import { useShifts } from '../hooks/useShifts'
 import { useProfile } from '../hooks/useProfile'
 import type { Shift } from '../lib/database.types'
-import { formatDateUA, formatMoney, isoDate, monthNameUA, weekdayLongUA } from '../lib/utils'
+import { formatDateUA, formatMoney, isoDate, monthNameUA, parseLocalDate, weekdayLongUA } from '../lib/utils'
 import { ShiftForm } from '../components/ShiftForm'
 
 function monthOptions(years = 2) {
@@ -138,7 +138,7 @@ export function ShiftsPage() {
               >
                 <div>
                   <div className="text-[10px] uppercase opacity-80">{s.weekday}</div>
-                  <div className="text-base font-bold">{new Date(s.date).getDate()}</div>
+                  <div className="text-base font-bold">{parseLocalDate(s.date).getDate()}</div>
                 </div>
               </div>
               <div className="min-w-0 flex-1">
