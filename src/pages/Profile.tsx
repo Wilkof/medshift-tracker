@@ -1,15 +1,19 @@
-import { useEffect, useState } from 'react'
-import { Download, LogOut, Moon, Palette, Save, Sun, User as UserIcon } from 'lucide-react'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { Download, LogOut, Moon, Palette, Save, Sun, Upload, User as UserIcon } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useProfile } from '../hooks/useProfile'
 import { useShifts } from '../hooks/useShifts'
 import { useTheme, type ThemeMode } from '../contexts/ThemeContext'
 import { downloadCsv, shiftsToCsv } from '../lib/utils'
 
+const ImportDialog = lazy(() =>
+  import('../components/ImportDialog').then((m) => ({ default: m.ImportDialog })),
+)
+
 export function ProfilePage() {
   const { user, signOut } = useAuth()
   const { profile, update } = useProfile()
-  const { shifts } = useShifts({})
+  const { shifts, refresh } = useShifts({})
   const { mode, setMode } = useTheme()
 
   const [fullName, setFullName] = useState('')
@@ -17,6 +21,7 @@ export function ProfilePage() {
   const [currency, setCurrency] = useState('PLN')
   const [saving, setSaving] = useState(false)
   const [savedAt, setSavedAt] = useState<number | null>(null)
+  const [importOpen, setImportOpen] = useState(false)
 
   useEffect(() => {
     if (profile) {
@@ -122,6 +127,13 @@ export function ProfilePage() {
         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
           Дані
         </h2>
+        <button
+          onClick={() => setImportOpen(true)}
+          className="btn btn-secondary w-full"
+        >
+          <Upload className="h-4 w-4" />
+          Імпортувати з Excel
+        </button>
         <button onClick={exportCsv} className="btn btn-secondary w-full">
           <Download className="h-4 w-4" />
           Експортувати CSV ({shifts.length} записів)
@@ -142,6 +154,17 @@ export function ProfilePage() {
       <p className="pt-2 text-center text-xs text-slate-400">
         MedShift · Створено з ❤️ для медичних працівників
       </p>
+
+      {importOpen && (
+        <Suspense fallback={null}>
+          <ImportDialog
+            open={importOpen}
+            onClose={() => setImportOpen(false)}
+            defaultRate={rate}
+            onImported={() => void refresh()}
+          />
+        </Suspense>
+      )}
     </div>
   )
 }

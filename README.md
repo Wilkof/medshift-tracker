@@ -8,12 +8,12 @@
 
 ## Можливості
 
-- **Dashboard** — кількість змін, годин, заробіток за місяць, найближча зміна, швидкий запис нової зміни.
+- **Dashboard** — кількість змін, годин, заробіток за місяць, найближча зміна, швидкий запис нової зміни, пресети (`⚡` денна / пів-дня / нічна).
 - **Календар** — місячний календар із виділенням робочих днів, годин та заробітку по днях.
 - **Список змін** — усі зміни з фільтрами за місяцем, пошуком, редагуванням та видаленням.
 - **Статистика** — графіки заробітку / годин по місяцях, середнє за зміну та годину, найзавантаженіші дні тижня.
-- **Профіль** — реєстрація / вхід, вихід, ставка за замовчуванням, валюта, тема (світла / темна / авто), експорт CSV.
-- **PWA** — встановлюваний застосунок, офлайн-режим, іконки та сплеш для мобільних.
+- **Профіль** — реєстрація / вхід (+ скидання паролю), ставка за замовчуванням, валюта, тема (світла / темна / авто), **імпорт з Excel** (`.xlsx`), експорт CSV.
+- **PWA** — встановлюваний застосунок з prompt-банером, офлайн-режим (Workbox NetworkFirst для Supabase), іконки 192/512/maskable, iOS splash.
 
 ## Технології
 
@@ -111,13 +111,24 @@ vite.config.ts       PWA + Tailwind + chunking
 
 ## Deploy (Netlify)
 
-1. Push репозиторій на GitHub.
-2. У Netlify: **Add new site → Import from Git** → вибрати репозиторій.
-3. Build command: `npm run build`, publish dir: `dist` (вже у `netlify.toml`).
-4. Environment variables:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-5. Deploy. SPA fallback і заголовки кешування налаштовані автоматично.
+Застосунок уже задеплоєно: **https://medshift-tracker-419.netlify.app**.
+
+### Налаштувати auto-deploy з GitHub
+
+1. Відкрити [app.netlify.com/projects/medshift-tracker-419](https://app.netlify.com/projects/medshift-tracker-419).
+2. **Site configuration → Build & deploy → Continuous deployment → Link repository**.
+3. Обрати **GitHub** → авторизувати Netlify GitHub App → обрати `Wilkof/medshift-tracker`.
+4. Branch: `main`. Build command і publish dir читатимуться з `netlify.toml`.
+5. Environment variables уже налаштовані (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`).
+6. Кожен `git push` у `main` тепер автоматично деплоїться.
+
+### Ручний deploy з CLI
+
+```bash
+netlify deploy --build --prod
+```
+
+SPA fallback, security та cache headers налаштовані у `netlify.toml`.
 
 ## PWA
 

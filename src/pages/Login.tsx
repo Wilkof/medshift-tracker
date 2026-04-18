@@ -4,8 +4,8 @@ import { Stethoscope } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 export function LoginPage() {
-  const { user, loading, signIn, signUp } = useAuth()
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
+  const { user, loading, signIn, signUp, resetPassword } = useAuth()
+  const [mode, setMode] = useState<'signin' | 'signup' | 'reset'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
@@ -27,6 +27,13 @@ export function LoginPage() {
     setError(null)
     setInfo(null)
     setBusy(true)
+    if (mode === 'reset') {
+      const { error } = await resetPassword(email.trim())
+      setBusy(false)
+      if (error) setError(translateError(error))
+      else setInfo('Перевірте email — ми надіслали посилання для скидання паролю.')
+      return
+    }
     const { error } =
       mode === 'signin'
         ? await signIn(email.trim(), password)
@@ -106,19 +113,36 @@ export function LoginPage() {
                 placeholder="name@example.com"
               />
             </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">Пароль</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="input"
-                autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
-                required
-                minLength={6}
-                placeholder="Не менше 6 символів"
-              />
-            </div>
+            {mode !== 'reset' && (
+              <div>
+                <div className="mb-1.5 flex items-baseline justify-between">
+                  <label className="text-sm font-medium">Пароль</label>
+                  {mode === 'signin' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode('reset')
+                        setError(null)
+                        setInfo(null)
+                      }}
+                      className="text-xs font-medium text-brand-600 hover:underline dark:text-brand-400"
+                    >
+                      Забули пароль?
+                    </button>
+                  )}
+                </div>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="input"
+                  autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+                  required
+                  minLength={6}
+                  placeholder="Не менше 6 символів"
+                />
+              </div>
+            )}
 
             {error && (
               <div className="rounded-xl bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-500/10 dark:text-rose-300">
@@ -132,8 +156,27 @@ export function LoginPage() {
             )}
 
             <button type="submit" className="btn btn-primary w-full" disabled={busy}>
-              {busy ? 'Зачекайте…' : mode === 'signin' ? 'Увійти' : 'Створити акаунт'}
+              {busy
+                ? 'Зачекайте…'
+                : mode === 'signin'
+                  ? 'Увійти'
+                  : mode === 'signup'
+                    ? 'Створити акаунт'
+                    : 'Надіслати посилання'}
             </button>
+            {mode === 'reset' && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('signin')
+                  setError(null)
+                  setInfo(null)
+                }}
+                className="btn btn-ghost w-full"
+              >
+                Повернутися до входу
+              </button>
+            )}
           </form>
         </div>
 

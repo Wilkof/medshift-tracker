@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { CalendarClock, Coins, Clock, Plus, TrendingUp } from 'lucide-react'
+import { CalendarClock, Coins, Clock, Plus, TrendingUp, Zap } from 'lucide-react'
 import { useShifts } from '../hooks/useShifts'
 import { useProfile } from '../hooks/useProfile'
 import { useAuth } from '../contexts/AuthContext'
@@ -12,6 +12,7 @@ import {
 } from '../lib/utils'
 import { StatCard } from '../components/StatCard'
 import { ShiftForm } from '../components/ShiftForm'
+import { QuickAddSheet } from '../components/QuickAddSheet'
 
 export function DashboardPage() {
   const { user } = useAuth()
@@ -30,6 +31,7 @@ export function DashboardPage() {
   })
 
   const [formOpen, setFormOpen] = useState(false)
+  const [quickOpen, setQuickOpen] = useState(false)
 
   const stats = useMemo(() => {
     const worked = shifts.filter((s) => s.hours > 0)
@@ -73,14 +75,24 @@ export function DashboardPage() {
             {monthNameUA(now.getMonth())} {now.getFullYear()}
           </p>
         </div>
-        <button
-          onClick={() => setFormOpen(true)}
-          className="btn btn-primary !px-4 !py-3"
-          aria-label="Додати зміну"
-        >
-          <Plus className="h-5 w-5" />
-          <span>Додати</span>
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setQuickOpen(true)}
+            className="btn btn-secondary !px-3 !py-3"
+            aria-label="Швидке додавання"
+            title="Швидке додавання"
+          >
+            <Zap className="h-5 w-5" />
+          </button>
+          <button
+            onClick={() => setFormOpen(true)}
+            className="btn btn-primary !px-4 !py-3"
+            aria-label="Додати зміну"
+          >
+            <Plus className="h-5 w-5" />
+            <span>Додати</span>
+          </button>
+        </div>
       </header>
 
       <section className="grid grid-cols-2 gap-3">
@@ -198,6 +210,14 @@ export function DashboardPage() {
         defaultRate={profile?.default_rate ?? 33}
         currency={currency}
         onSave={upsert}
+      />
+
+      <QuickAddSheet
+        open={quickOpen}
+        onClose={() => setQuickOpen(false)}
+        defaultRate={profile?.default_rate ?? 33}
+        onAdd={upsert}
+        onOpenCustom={() => setFormOpen(true)}
       />
     </div>
   )
